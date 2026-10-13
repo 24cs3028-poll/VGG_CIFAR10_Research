@@ -1,148 +1,70 @@
- # VGG Architecture Comparison on CIFAR-10
+# VGG Architectures on CIFAR-10
 
-## Project Overview
+## Project summary
+This project implements and compares VGG-11, VGG-13, and VGG-16 on CIFAR-10, each with and without Batch Normalization (BN). It explores the VGG design idea of stacking small 3×3 convolutions and uses BN as the main ablation.
 
-This project compares VGG11, VGG13, and VGG16 convolutional neural network (CNN) architectures on the CIFAR-10 image classification dataset. Each architecture is evaluated with and without Batch Normalization (BN) to study its effect on classification performance.
+This is a reduced-scale CIFAR-10 study inspired by Simonyan and Zisserman's VGG paper. It is **not** a direct reproduction of the original ImageNet benchmark or training recipe.
 
-The models are implemented using PyTorch and evaluated using training, validation, and test metrics.
+## Research questions
+1. How does measured performance change across VGG-11, VGG-13, and VGG-16?
+2. What changes when Batch Normalization is enabled or disabled?
+3. How do parameter count and accuracy compare?
+4. Which CIFAR-10 classes are more difficult for the best measured model?
 
-## Objectives
+## Dataset and split
+CIFAR-10 has 60,000 32×32 RGB images across ten classes. This notebook uses 45,000 training images, 5,000 validation images, and 10,000 test images.
 
-- Implement VGG11, VGG13, and VGG16 architectures.
-- Compare each architecture with and without Batch Normalization.
-- Train and evaluate all six model configurations on CIFAR-10.
-- Analyze accuracy, parameter counts, and class-wise classification performance.
-- Visualize and compare experimental results.
-
-## Dataset
-
-**CIFAR-10** contains 60,000 color images of size 32 × 32 pixels across 10 classes.
-
-The dataset is divided into:
-
-- Training: 45,000 images
-- Validation: 5,000 images
-- Testing: 10,000 images
-
-The ten classes are airplane, automobile, bird, cat, deer, dog, frog, horse, ship, and truck.
-
-## Model Configurations
-
-Six configurations are evaluated:
-
-1. VGG11 without Batch Normalization
-2. VGG11 with Batch Normalization
-3. VGG13 without Batch Normalization
-4. VGG13 with Batch Normalization
-5. VGG16 without Batch Normalization
-6. VGG16 with Batch Normalization
-
-## Methodology
-
-1. Load and preprocess the CIFAR-10 dataset.
-2. Create training, validation, and test datasets.
-3. Implement the VGG architectures using PyTorch.
-4. Apply Kaiming weight initialization.
-5. Train the models using Cross-Entropy Loss and SGD with momentum.
-6. Use a Cosine Annealing learning-rate scheduler.
-7. Evaluate the trained models on validation and test datasets.
-8. Compare the results using tables, plots, and classification metrics.
-
-### Training Configuration
-
-- Optimizer: SGD
-- Initial learning rate: 0.05
-- Momentum: 0.9
+## Method
+- Framework: PyTorch and TorchVision
+- Architectures: VGG-11, VGG-13, VGG-16
+- Ablation: with and without Batch Normalization
+- Loss: CrossEntropyLoss
+- Optimizer: SGD (learning rate 0.05, momentum 0.9)
 - Weight decay: 0.0005
-- Learning-rate scheduler: CosineAnnealingLR
-- Epochs in the reported experiments: 5
-- Loss function: CrossEntropyLoss
+- Scheduler: CosineAnnealingLR
+- Initialization: Kaiming initialization
+- Reported final experiments: 5 epochs per model
+- Seed: the notebook sets `SEED = 42`; verify that all relevant random sources and data-loader workers use it in the environment where you rerun.
 
-## Evaluation Metrics
+## Recorded results
+The following test accuracies were recorded in the project conversation and should be treated as preliminary, five-epoch results:
 
-The project evaluates models using:
+| Model | BatchNorm | Test accuracy | Parameters |
+|---|---|---:|---:|
+| VGG11 | No | 77.71% | 9,225,610 |
+| VGG11 | Yes | 68.96% | 9,231,114 |
+| VGG13 | No | 75.11% | 9,410,122 |
+| VGG13 | Yes | 39.79% | 9,416,010 |
+| VGG16 | No | 70.85% | 14,719,818 |
+| VGG16 | Yes | 33.32% | 14,728,266 |
 
-- Training accuracy
-- Validation accuracy
-- Test accuracy
-- Model parameter count
-- Confusion matrix
-- Precision, recall, and F1-score
-- Training-history visualizations
+These results are not a general conclusion that Batch Normalization hurts performance. The poor deeper BN results should be investigated with longer training, learning-rate checks, confirmation of BN placement and `train()`/`eval()` usage, and repeated runs.
 
-## Experimental Results
+## Reproduce the experiments
+1. Open `VGG_CIFAR10_Research.ipynb` in Google Colab.
+2. Select **Runtime → Change runtime type → T4 GPU** if available.
+3. Run the notebook cells in order.
+4. Check that the training, validation, test, and plots complete without errors.
+5. Record any changed configuration (epochs, batch size, augmentation, learning rate, seed) in your report.
 
-| Model | Batch Normalization | Test Accuracy |
-|---|---|---:|
-| VGG11 | No | 77.71% |
-| VGG11 | Yes | 68.96% |
-| VGG13 | No | 75.11% |
-| VGG13 | Yes | 39.79% |
-| VGG16 | No | 70.85% |
-| VGG16 | Yes | 33.32% |
-
-**Important:** These are preliminary results from five training epochs. The low accuracy of some Batch Normalization configurations should be investigated with longer training and additional experiments. These results do not establish that Batch Normalization is generally worse.
-
-## Project Files
-
-The repository may contain:
-
-- `VGG_CIFAR10.ipynb` — notebook containing model implementation, training, and evaluation.
-- `requirements.txt` — Python dependencies.
-- `preliminary_results.csv` — preliminary experiment results.
-- `final_validation_results.csv` — validation results.
-- `final_test_results.csv` — test results.
-- `final_training_history.csv` — training-history data.
-- Figures and plots — visualizations of model performance.
-
-*Update these filenames if your actual uploaded files use different names.*
-
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/24cs3028-poll/VGG-CIFAR10-Research.git
-cd VGG-CIFAR10-Research
-```
-
-Install the dependencies:
-
+Install dependencies locally with:
 ```bash
 pip install -r requirements.txt
 ```
 
-## How to Run
+## Files
+- `VGG_CIFAR10_Research.ipynb`: notebook supplied for the project.
+- `requirements.txt`: Python dependencies.
+- `VGG_CIFAR10_Research_Report.pdf`: four-page IEEE-style draft report.
 
-1. Open `VGG_CIFAR10.ipynb` in Google Colab or Jupyter Notebook.
-2. Install the required dependencies if necessary.
-3. Run the notebook cells in order.
-4. Allow the models to train and evaluate.
-5. Review the generated result tables, metrics, and visualizations.
-
-Training time depends on the selected hardware and configuration.
-
-## Limitations and Future Work
-
-- Train for more epochs to improve convergence.
-- Investigate the low accuracy of the Batch Normalization models.
-- Experiment with learning rates, batch sizes, and optimizers.
-- Add repeated runs to assess result variability.
-- Compare the models using additional evaluation metrics.
+## Limitations
+- Five epochs is a short training budget and does not establish convergence.
+- CIFAR-10 and the adapted classifier differ from the original VGG ImageNet experiment.
+- Only one reported run per configuration is available here; run-to-run variability is unknown.
+- The recorded results should be regenerated in Colab before final submission if the instructor requires fresh execution evidence.
 
 ## Reference
+K. Simonyan and A. Zisserman, “Very Deep Convolutional Networks for Large-Scale Image Recognition,” arXiv:1409.1556, 2014 (revised 2015). https://arxiv.org/abs/1409.1556
 
-Simonyan, K. and Zisserman, A. (2015). *Very Deep Convolutional Networks for Large-Scale Image Recognition.*
-
-Paper: https://arxiv.org/abs/1409.1556
-
-## Technologies Used
-
-- Python
-- PyTorch
-- Torchvision
-- NumPy
-- Pandas
-- Matplotlib
-- Scikit-learn
-- Google Colab
+## Third-party code
+This notebook uses standard PyTorch and TorchVision APIs. If you used or adapted an official or third-party implementation beyond standard library building blocks, add its repository URL and describe the parts consulted here and in the report.
